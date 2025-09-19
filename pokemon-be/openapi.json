@@ -1,0 +1,453 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Modinity Pokemon",
+    "description": "Simple CRUD backend for Favorites and Team using SQLite (Express + better-sqlite3).",
+    "version": "1.0.0"
+  },
+  "servers": [
+    { "url": "http://localhost:3001", "description": "Local dev server" }
+  ],
+  "tags": [{ "name": "Favorites" }, { "name": "Team" }],
+  "paths": {
+    "/api/favorites": {
+      "get": {
+        "tags": ["Favorites"],
+        "summary": "List favorites",
+        "operationId": "listFavorites",
+        "responses": {
+          "200": {
+            "description": "Array of favorite Pokemon",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Favorite" }
+                },
+                "examples": {
+                  "sample": {
+                    "value": [
+                      {
+                        "id": 1,
+                        "pokemon_id": 1,
+                        "name": "bulbasaur",
+                        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
+                        "types": ["grass", "poison"],
+                        "created_at": "2025-09-01T10:00:00Z"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" },
+                "examples": {
+                  "internal": {
+                    "value": { "error": "internal", "code": "INTERNAL_ERROR" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Favorites"],
+        "summary": "Add favorite",
+        "operationId": "addFavorite",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/FavoriteCreate" },
+              "example": {
+                "pokemonId": 1,
+                "name": "bulbasaur",
+                "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
+                "types": ["grass", "poison"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created favorite",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Favorite" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error or already favorited",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" },
+                "examples": {
+                  "validationError": {
+                    "summary": "Missing required fields",
+                    "value": {
+                      "error": "pokemonId and name required",
+                      "code": "VALIDATION"
+                    }
+                  },
+                  "duplicateFavorite": {
+                    "summary": "Already favorited",
+                    "value": {
+                      "error": "Pokemon already favorited",
+                      "code": "DUPLICATE"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" },
+                "examples": {
+                  "internal": {
+                    "value": { "error": "internal", "code": "INTERNAL_ERROR" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/favorites/{id}": {
+      "delete": {
+        "tags": ["Favorites"],
+        "summary": "Delete favorite by internal id",
+        "operationId": "deleteFavorite",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "minimum": 1 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "success": { "type": "boolean" } }
+                },
+                "examples": { "sample": { "value": { "success": true } } }
+              }
+            }
+          },
+          "404": {
+            "description": "Favorite not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" },
+                "examples": {
+                  "notFound": {
+                    "value": { "error": "not found", "code": "NOT_FOUND" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" },
+                "examples": {
+                  "internal": {
+                    "value": { "error": "internal", "code": "INTERNAL_ERROR" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/team": {
+      "get": {
+        "tags": ["Team"],
+        "summary": "List team members",
+        "operationId": "listTeam",
+        "responses": {
+          "200": {
+            "description": "Array of team members",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/TeamMember" }
+                },
+                "examples": {
+                  "sample": {
+                    "value": [
+                      {
+                        "id": 10,
+                        "pokemon_id": 6,
+                        "name": "charizard",
+                        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/6.png",
+                        "types": ["fire", "flying"],
+                        "created_at": "2025-09-01T10:05:00Z"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" },
+                "examples": {
+                  "internal": {
+                    "value": { "error": "internal", "code": "INTERNAL_ERROR" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Team"],
+        "summary": "Add Pokemon to team (max 6, no duplicates)",
+        "operationId": "addTeamMember",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/TeamMemberCreate" },
+              "example": {
+                "pokemonId": 25,
+                "name": "pikachu",
+                "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png",
+                "types": ["electric"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created team member",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TeamMember" }
+              }
+            }
+          },
+          "400": {
+            "description": "Team full (max 6), duplicate Pokemon, or validation error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" },
+                "examples": {
+                  "validationError": {
+                    "summary": "Missing required fields",
+                    "value": {
+                      "error": "pokemonId and name required",
+                      "code": "VALIDATION"
+                    }
+                  },
+                  "duplicateTeam": {
+                    "summary": "Already in team",
+                    "value": {
+                      "error": "Pokemon already in team",
+                      "code": "DUPLICATE"
+                    }
+                  },
+                  "teamFull": {
+                    "summary": "Team full",
+                    "value": {
+                      "error": "Team is full (max 6)",
+                      "code": "TEAM_FULL"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" },
+                "examples": {
+                  "internal": {
+                    "value": { "error": "internal", "code": "INTERNAL_ERROR" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/team/{id}": {
+      "delete": {
+        "tags": ["Team"],
+        "summary": "Remove team member by internal id",
+        "operationId": "deleteTeamMember",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "minimum": 1 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "success": { "type": "boolean" } }
+                },
+                "examples": { "sample": { "value": { "success": true } } }
+              }
+            }
+          },
+          "404": {
+            "description": "Team member not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" },
+                "examples": {
+                  "notFound": {
+                    "value": { "error": "not found", "code": "NOT_FOUND" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" },
+                "examples": {
+                  "internal": {
+                    "value": { "error": "internal", "code": "INTERNAL_ERROR" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Favorite": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "pokemon_id": {
+            "type": "integer",
+            "example": 1,
+            "description": "PokeAPI numeric id (stored unique)"
+          },
+          "name": { "type": "string", "example": "bulbasaur" },
+          "sprite": {
+            "type": "string",
+            "nullable": true,
+            "example": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png"
+          },
+          "types": {
+            "type": "array",
+            "items": { "type": "string" },
+            "example": ["grass", "poison"]
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-09-01T10:00:00Z"
+          }
+        }
+      },
+      "FavoriteCreate": {
+        "type": "object",
+        "required": ["pokemonId", "name"],
+        "properties": {
+          "pokemonId": { "type": "integer", "example": 1 },
+          "name": { "type": "string", "example": "bulbasaur" },
+          "sprite": {
+            "type": "string",
+            "example": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png"
+          },
+          "types": {
+            "type": "array",
+            "items": { "type": "string" },
+            "example": ["grass", "poison"]
+          }
+        }
+      },
+      "TeamMember": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 10 },
+          "pokemon_id": { "type": "integer", "example": 25 },
+          "name": { "type": "string", "example": "pikachu" },
+          "sprite": {
+            "type": "string",
+            "nullable": true,
+            "example": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png"
+          },
+          "types": {
+            "type": "array",
+            "items": { "type": "string" },
+            "example": ["electric"]
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-09-01T10:05:00Z"
+          }
+        }
+      },
+      "TeamMemberCreate": {
+        "type": "object",
+        "required": ["pokemonId", "name"],
+        "properties": {
+          "pokemonId": { "type": "integer", "example": 25 },
+          "name": { "type": "string", "example": "pikachu" },
+          "sprite": {
+            "type": "string",
+            "example": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png"
+          },
+          "types": {
+            "type": "array",
+            "items": { "type": "string" },
+            "example": ["electric"]
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": { "type": "string", "example": "Pokemon already in team" },
+          "code": { "type": "string", "example": "DUPLICATE" },
+          "details": { "type": "object", "additionalProperties": true }
+        }
+      }
+    }
+  }
+}
