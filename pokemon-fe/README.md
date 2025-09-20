@@ -1,75 +1,55 @@
-# Nuxt Minimal Starter
+# Pokemon Frontend (Nuxt 4 + Tailwind)
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+SSR Nuxt app for Modinity Pokemon.
 
-## Setup
+## Stack
 
-Make sure to install dependencies:
+- Nuxt 4 (Nitro), Vue 3
+- TailwindCSS, @nuxt/icon
+- Runtime config for API base
+- Docker support
+
+## Runtime Config
+
+The backend base URL is read from `runtimeConfig.public.apiBase`.
+
+Set via env var `MODINITY_POKEMON_API_BASE`:
 
 ```bash
-# npm
+MODINITY_POKEMON_API_BASE=https://api.example.com/api
+```
+
+## Develop
+
+```bash
+cd pokemon-fe
 npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
+npm run dev # http://localhost:3000
 ```
 
-## Development Server
-
-Start the development server on `http://localhost:3000`:
+## Build & Run
 
 ```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
-```
-
-## Production
-
-Build the application for production:
-
-```bash
-# npm
 npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
+npm run preview
 ```
 
-Locally preview production build:
+## Docker
+
+Build and run (SSR server on port 3000):
 
 ```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
+cd pokemon-fe
+docker build -t pokemon-fe .
+docker run -d --name pokemon-fe \
+  -p 3000:3000 \
+  -e MODINITY_POKEMON_API_BASE="https://api.example.com/api" \
+  --restart unless-stopped \
+  pokemon-fe
 ```
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+Or from repo root:
+
+```bash
+MODINITY_POKEMON_API_BASE="https://api.example.com/api" ./deploy-fe.sh
+```

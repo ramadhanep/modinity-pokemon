@@ -19,11 +19,11 @@ export const usePokeStore = () => {
   // Each record shape (expected from backend):
   // { id, pokemon_id, name, sprite, types }
   const listFavorites = async () => {
-    return await get("/api/favorites");
+    return await get("/favorites");
   };
 
   const listTeam = async () => {
-    return await get("/api/team");
+    return await get("/team");
   };
 
   // -------- Sync helpers for the shared maps --------
@@ -53,11 +53,11 @@ export const usePokeStore = () => {
 
       const existing = favMap.value[id];
       if (existing) {
-        await del(`/api/favorites/${existing}`);
+        await del(`/favorites/${existing}`);
         delete favMap.value[id];
         return { ok: true, action: "removed" };
       } else {
-        const created = await post("/api/favorites", {
+        const created = await post("/favorites", {
           pokemonId: id,
           name: p.name,
           sprite: p.sprite,
@@ -82,7 +82,7 @@ export const usePokeStore = () => {
       if (!id) return { ok: false, message: "Invalid Pokemon payload." };
       if (teamMap.value[id]) return { ok: false, message: "Already in Team" };
 
-      const created = await post("/api/team", {
+      const created = await post("/team", {
         pokemonId: id,
         name: p.name,
         sprite: p.sprite,
@@ -104,7 +104,7 @@ export const usePokeStore = () => {
     try {
       const recId = teamMap.value[pokemonId];
       if (!recId) return { ok: true }; // nothing to remove
-      await del(`/api/team/${recId}`);
+      await del(`/team/${recId}`);
       delete teamMap.value[pokemonId];
       return { ok: true };
     } catch (e) {

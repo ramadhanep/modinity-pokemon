@@ -5,7 +5,7 @@ export default defineNuxtConfig({
   modules: ['@nuxtjs/tailwindcss', '@nuxt/icon'],
   runtimeConfig: {
     public: {
-      apiBase: process.env.MODINITY_POKEMON_API_BASE || 'http://localhost:3001',
+      apiBase: process.env.MODINITY_POKEMON_API_BASE || 'http://localhost:3001/api',
       pokeBase: 'https://pokeapi.co/api/v2',
       siteName: 'Modinity Pokemon',
       githubUrl: 'https://github.com/ramadhanep/modinity-pokemon'
