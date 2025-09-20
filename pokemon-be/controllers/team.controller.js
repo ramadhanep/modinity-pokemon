@@ -1,24 +1,13 @@
-// controllers/team.controller.js
-const db = require("../db");
-
-/** Transform DB row -> API shape */
-function toTeamMember(row) {
-  return {
-    ...row,
-    types: row?.types ? JSON.parse(row.types) : [],
-  };
-}
+const { sendSuccess, sendError, sendInternalError } = require("../utils/responses");
+const Team = require("../models/team.model");
 
 /** GET /api/team */
 function listTeam(_req, res) {
   try {
-    const rows = db
-      .prepare("SELECT * FROM team_members ORDER BY created_at ASC")
-      .all();
-    return res.json(rows.map(toTeamMember));
+    const rows = Team.listTeamMembers();
+    return sendSuccess(res, rows);
   } catch (err) {
-    console.error("listTeam error:", err);
-    return res.status(500).json({ error: "internal", code: "INTERNAL_ERROR" });
+    return sendInternalError(res, err, "listTeam");
   }
 }
 
@@ -28,44 +17,20 @@ function addTeamMember(req, res) {
 
   // validation
   if (!pokemonId || !name) {
-    return res
-      .status(400)
-      .json({ error: "pokemonId and name required", code: "VALIDATION" });
+    return sendError(res, 400, "pokemonId and name required", "VALIDATION");
   }
   if (types && !Array.isArray(types)) {
-    return res
-      .status(400)
-      .json({ error: "types must be an array of strings", code: "VALIDATION" });
+    return sendError(
+      res,
+      400,
+      "types must be an array of strings",
+      "VALIDATION"
+    );
   }
 
   try {
-    // transaction: check count then insert
-    const tx = db.transaction(() => {
-      const count = db
-        .prepare("SELECT COUNT(*) AS c FROM team_members")
-        .get().c;
-      if (count >= 6) {
-        // throw to break transaction and bubble up
-        throw new Error("TEAM_FULL");
-      }
-
-      const insert = db.prepare(
-        "INSERT INTO team_members (pokemon_id, name, sprite, types) VALUES (?, ?, ?, ?)"
-      );
-      const info = insert.run(
-        Number(pokemonId),
-        String(name),
-        sprite ? String(sprite) : null,
-        types ? JSON.stringify(types) : null
-      );
-
-      return db
-        .prepare("SELECT * FROM team_members WHERE id = ?")
-        .get(info.lastInsertRowid);
-    });
-
-    const row = tx();
-    return res.status(201).json(toTeamMember(row));
+    const member = Team.createTeamMember({ pokemonId, name, sprite, types });
+    return sendSuccess(res, member, 201);
   } catch (err) {
     // duplicate unique constraint
     if (
@@ -73,18 +38,13 @@ function addTeamMember(req, res) {
       typeof err.message === "string" &&
       err.message.includes("UNIQUE")
     ) {
-      return res
-        .status(400)
-        .json({ error: "Pokemon already in team", code: "DUPLICATE" });
+      return sendError(res, 400, "Pokemon already in team", "DUPLICATE");
     }
     // team full custom error
     if (err && err.message === "TEAM_FULL") {
-      return res
-        .status(400)
-        .json({ error: "Team is full (max 6)", code: "TEAM_FULL" });
+      return sendError(res, 400, "Team is full (max 6)", "TEAM_FULL");
     }
-    console.error("addTeamMember error:", err);
-    return res.status(500).json({ error: "internal", code: "INTERNAL_ERROR" });
+    return sendInternalError(res, err, "addTeamMember");
   }
 }
 
@@ -92,18 +52,17 @@ function addTeamMember(req, res) {
 function removeTeamMember(req, res) {
   const id = Number(req.params.id);
   if (!id) {
-    return res.status(400).json({ error: "id required", code: "VALIDATION" });
+    return sendError(res, 400, "id required", "VALIDATION");
   }
 
   try {
-    const info = db.prepare("DELETE FROM team_members WHERE id = ?").run(id);
-    if (info.changes === 0) {
-      return res.status(404).json({ error: "not found", code: "NOT_FOUND" });
+    const changes = Team.deleteTeamMemberById(id);
+    if (changes === 0) {
+      return sendError(res, 404, "not found", "NOT_FOUND");
     }
-    return res.json({ success: true });
+    return sendSuccess(res, { success: true });
   } catch (err) {
-    console.error("removeTeamMember error:", err);
-    return res.status(500).json({ error: "internal", code: "INTERNAL_ERROR" });
+    return sendInternalError(res, err, "removeTeamMember");
   }
 }
 
