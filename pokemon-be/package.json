@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "init-db": "node scripts/init-db.js"
+    "init-db": "node scripts/init-db.js",
+    "test": "jest --config ./jest.config.js"
   },
   "dependencies": {
     "better-sqlite3": "^12.2.0",
@@ -13,5 +14,9 @@
     "express": "^5.1.0",
     "nodemon": "^3.1.10",
     "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0"
   }
 }
