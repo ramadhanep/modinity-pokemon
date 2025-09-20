@@ -1,0 +1,10 @@
+.nuxt
+.output
+node_modules
+.git
+.DS_Store
+npm-debug.log
+*.log
+.env
+coverage
+
