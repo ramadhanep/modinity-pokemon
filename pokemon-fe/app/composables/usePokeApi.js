@@ -47,6 +47,16 @@ export const usePokeApi = () => {
     types: p.types?.map((t) => t.type.name) || [],
   });
 
+  // Human-friendly label for stats
+  const formatStatName = (n) => {
+    if (!n) return "";
+    if (String(n).toLowerCase() === "hp") return "HP";
+    // Replace dashes with spaces and Title Case
+    return String(n)
+      .replace(/-/g, " ")
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+  };
+
   const mapPokemon = (p) => ({
     id: p.id,
     name: p.name,
@@ -57,7 +67,7 @@ export const usePokeApi = () => {
     weight: p.weight ?? 0, // hectograms
     abilities: (p.abilities || []).map((a) => a.ability.name),
     stats: (p.stats || []).map((s) => ({
-      name: s.stat.name === "hp" ? "HP" : s.stat.name,
+      name: formatStatName(s.stat.name),
       value: s.base_stat,
     })),
     moves: (p.moves || []).map((m) => m.move.name),
