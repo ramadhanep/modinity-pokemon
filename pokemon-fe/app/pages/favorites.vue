@@ -1,7 +1,7 @@
 <template>
   <section class="space-y-6">
-    <!-- Header -->
-    <header class="flex items-center justify-between">
+    <!-- Page Title -->
+    <div class="flex items-center justify-between">
       <h1 class="text-2xl font-bold">Favorites</h1>
       <button
         @click="load()"
@@ -11,7 +11,7 @@
       >
         <Icon name="mdi:reload" class="w-4 h-4" /> Reload
       </button>
-    </header>
+    </div>
 
     <!-- Loading / Error -->
     <div v-if="loading" class="text-slate-500">Loading…</div>
@@ -30,6 +30,7 @@
           v-for="f in items"
           :key="f.id"
           :pokemon="mapFavorite(f)"
+          :to="`/pokemon/${f.name}`"
           remove-label="Remove from Favorites"
           @remove="openConfirm(f)"
         />

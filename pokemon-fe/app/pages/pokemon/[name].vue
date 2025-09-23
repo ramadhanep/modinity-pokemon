@@ -1,7 +1,7 @@
 <template>
   <section class="space-y-6">
-    <!-- Header / Breadcrumb -->
-    <header class="flex items-center justify-between">
+    <!-- Page Title -->
+    <div class="flex items-center justify-between">
       <NuxtLink
         to="/"
         class="inline-flex items-center gap-2 rounded-xl border px-3 py-2 hover:bg-slate-100"
@@ -9,7 +9,7 @@
         <Icon name="mdi:arrow-left" class="w-4 h-4" /> Back
       </NuxtLink>
       <span class="text-sm text-slate-500">Pokemon Detail</span>
-    </header>
+    </div>
 
     <!-- Loading / Error -->
     <div v-if="loading" class="text-slate-500">Loading…</div>

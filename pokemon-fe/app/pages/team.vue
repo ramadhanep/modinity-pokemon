@@ -1,7 +1,7 @@
 <template>
   <section class="space-y-6">
-    <!-- Header -->
-    <header class="flex items-center justify-between">
+    <!-- Page Title -->
+    <div class="flex items-center justify-between">
       <div>
         <h1 class="text-2xl font-bold">Team</h1>
         <p class="text-slate-600 text-sm mt-2">Max 6 members. No duplicates.</p>
@@ -14,7 +14,7 @@
       >
         <Icon name="mdi:reload" class="w-4 h-4" /> Reload
       </button>
-    </header>
+    </div>
 
     <!-- Loading / Error -->
     <div v-if="loading" class="text-slate-500">Loading…</div>
@@ -33,6 +33,7 @@
           v-for="m in members"
           :key="m.id"
           :pokemon="mapMember(m)"
+          :to="`/pokemon/${m.name}`"
           remove-label="Remove from Team"
           @remove="openConfirm(m)"
         />

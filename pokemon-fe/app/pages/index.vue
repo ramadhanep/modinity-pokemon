@@ -1,8 +1,8 @@
 <template>
   <section class="space-y-6">
     <HeroSlider />
-    <!-- Header -->
-    <header class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+    <!-- Page Title -->
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
       <h1 class="text-2xl font-bold tracking-tight">Pokedex</h1>
 
       <div class="flex items-center gap-2 ml-auto">
@@ -23,7 +23,7 @@
           <Icon name="mdi:reload" class="w-4 h-4" /> Reset
         </button>
       </div>
-    </header>
+    </div>
 
     <!-- Load & error -->
     <div v-if="loading" class="text-slate-500">Loading…</div>
